@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Review Sentiment Analyzer</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+  <h1>Customer review sentiment analyzer</h1>
+  <p class="subtitle">Sprint 1 demo. Upload a CSV of customer reviews and each one gets automatically tagged as positive, negative, or neutral.</p>
+
+  <form method="POST" enctype="multipart/form-data" class="upload-form">
+    <input type="file" name="review_file" accept=".csv" required>
+    <button type="submit">Analyze reviews</button>
+  </form>
+
+  {% if error %}
+    <p class="error">{{ error }}</p>
+  {% endif %}
+
+  {% if summary %}
+    <div class="summary">
+      <div class="stat"><span class="num">{{ summary.total }}</span><span class="label">Total reviews</span></div>
+      <div class="stat positive"><span class="num">{{ summary.positive }}</span><span class="label">Positive</span></div>
+      <div class="stat neutral"><span class="num">{{ summary.neutral }}</span><span class="label">Neutral</span></div>
+      <div class="stat negative"><span class="num">{{ summary.negative }}</span><span class="label">Negative</span></div>
+    </div>
+  {% endif %}
+
+  {% if results %}
+    <table>
+      <thead>
+        <tr><th>Review</th><th>Sentiment</th></tr>
+      </thead>
+      <tbody>
+        {% for row in results %}
+          <tr>
+            <td>{{ row.text }}</td>
+            <td><span class="tag {{ row.sentiment|lower }}">{{ row.sentiment }}</span></td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% endif %}
+
+</body>
+</html>
