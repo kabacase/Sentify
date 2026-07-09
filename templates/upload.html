@@ -2,13 +2,19 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Review Sentiment Analyzer</title>
+  <title>Sentify - Upload Reviews</title>
   <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
 
+  <nav class="topnav">
+    <a href="{{ url_for('upload') }}">Upload</a>
+    <a href="{{ url_for('dashboard') }}">Dashboard</a>
+    <a href="{{ url_for('logout') }}">Log out</a>
+  </nav>
+
   <h1>Customer review sentiment analyzer</h1>
-  <p class="subtitle">Sprint 1 demo. Upload a CSV of customer reviews and each one gets automatically tagged as positive, negative, or neutral.</p>
+  <p class="subtitle">Upload a CSV of customer reviews and each one gets automatically tagged as positive, negative, neutral, or undefined.</p>
 
   <form method="POST" enctype="multipart/form-data" class="upload-form">
     <input type="file" name="review_file" accept=".csv" required>
@@ -25,6 +31,7 @@
       <div class="stat positive"><span class="num">{{ summary.positive }}</span><span class="label">Positive</span></div>
       <div class="stat neutral"><span class="num">{{ summary.neutral }}</span><span class="label">Neutral</span></div>
       <div class="stat negative"><span class="num">{{ summary.negative }}</span><span class="label">Negative</span></div>
+      <div class="stat undefined"><span class="num">{{ summary.undefined }}</span><span class="label">Undefined</span></div>
     </div>
   {% endif %}
 

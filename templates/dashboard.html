@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Sentify - Dashboard</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+  <nav class="topnav">
+    <a href="{{ url_for('upload') }}">Upload</a>
+    <a href="{{ url_for('dashboard') }}">Dashboard</a>
+    <a href="{{ url_for('logout') }}">Log out</a>
+  </nav>
+
+  <h1>Sentiment dashboard</h1>
+  <p class="subtitle">Aggregate breakdown across all reviews you've uploaded.</p>
+
+  <div class="summary">
+    <div class="stat"><span class="num">{{ summary.total }}</span><span class="label">Total reviews</span></div>
+    <div class="stat positive"><span class="num">{{ summary.positive }}</span><span class="label">Positive</span></div>
+    <div class="stat neutral"><span class="num">{{ summary.neutral }}</span><span class="label">Neutral</span></div>
+    <div class="stat negative"><span class="num">{{ summary.negative }}</span><span class="label">Negative</span></div>
+    <div class="stat undefined"><span class="num">{{ summary.undefined }}</span><span class="label">Undefined</span></div>
+  </div>
+
+  <div class="bar-chart">
+    <div class="bar-row">
+      <span class="bar-label">Positive</span>
+      <div class="bar-track"><div class="bar-fill positive" style="width: {{ percentages.positive }}%;"></div></div>
+      <span class="bar-pct">{{ percentages.positive }}%</span>
+    </div>
+    <div class="bar-row">
+      <span class="bar-label">Neutral</span>
+      <div class="bar-track"><div class="bar-fill neutral" style="width: {{ percentages.neutral }}%;"></div></div>
+      <span class="bar-pct">{{ percentages.neutral }}%</span>
+    </div>
+    <div class="bar-row">
+      <span class="bar-label">Negative</span>
+      <div class="bar-track"><div class="bar-fill negative" style="width: {{ percentages.negative }}%;"></div></div>
+      <span class="bar-pct">{{ percentages.negative }}%</span>
+    </div>
+    <div class="bar-row">
+      <span class="bar-label">Undefined</span>
+      <div class="bar-track"><div class="bar-fill undefined" style="width: {{ percentages.undefined }}%;"></div></div>
+      <span class="bar-pct">{{ percentages.undefined }}%</span>
+    </div>
+  </div>
+
+  <div class="export-links">
+    <a href="{{ url_for('export_csv') }}"><button type="button">Export CSV</button></a>
+    <a href="{{ url_for('export_pdf') }}"><button type="button">Export PDF</button></a>
+  </div>
+
+</body>
+</html>
