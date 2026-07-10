@@ -1,18 +1,22 @@
 import csv
 import io
+import secrets
 from functools import wraps
 
 from flask import Flask, render_template, request, redirect, url_for, session, Response
 from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
-from werkzeug.security import check_password_hash
+from werkzeug.security import check_password_hash, generate_password_hash
 from fpdf import FPDF
 from fpdf.enums import XPos, YPos
 
 import db
 
 app = Flask(__name__)
-app.secret_key = "sentify-dev-secret"
+app.secret_key = secrets.token_hex(32)
 analyzer = SentimentIntensityAnalyzer()
+
+# used to keep login response time the same whether or not the email exists
+DUMMY_PASSWORD_HASH = generate_password_hash(secrets.token_hex(16))
 
 # columns we'll look for in the uploaded CSV, in order of preference
 LIKELY_COLUMN_NAMES = ["review", "review_text", "text", "comment", "feedback"]
@@ -62,7 +66,9 @@ def login():
         email = request.form.get("email", "").strip()
         password = request.form.get("password", "")
         user = db.get_user_by_email(email)
-        if user and check_password_hash(user["password_hash"], password):
+        password_hash = user["password_hash"] if user else DUMMY_PASSWORD_HASH
+        password_ok = check_password_hash(password_hash, password)
+        if user and password_ok:
             session["user_id"] = user["id"]
             session["email"] = user["email"]
             return redirect(url_for("upload"))
@@ -132,6 +138,13 @@ def dashboard():
     return render_template("dashboard.html", summary=summary, percentages=percentages)
 
 
+def escape_formula(value):
+    """Prevent spreadsheet apps from treating exported text as a formula."""
+    if value and value[0] in ("=", "+", "-", "@"):
+        return "'" + value
+    return value
+
+
 @app.route("/export/csv")
 @login_required
 def export_csv():
@@ -140,7 +153,7 @@ def export_csv():
     writer = csv.writer(buffer)
     writer.writerow(["review", "sentiment"])
     for review in reviews:
-        writer.writerow([review["text"], review["sentiment"]])
+        writer.writerow([escape_formula(review["text"]), review["sentiment"]])
 
     return Response(
         buffer.getvalue(),
