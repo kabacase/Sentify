@@ -1,5 +1,6 @@
 import csv
 import io
+import re
 import secrets
 from functools import wraps
 
@@ -34,6 +35,14 @@ def classify(text):
     """Returns 'Positive', 'Negative', 'Neutral', or 'Undefined' for a piece of text."""
     if not text or not text.strip():
         return "Undefined"
+    
+    words = re.findall(r"[A-Za-z]+", text)
+
+    # No real words
+    if len(words) == 0:
+        return "Undefined"
+
+
     score = analyzer.polarity_scores(text)["compound"]
     if score >= 0.05:
         return "Positive"
