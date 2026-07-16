@@ -1,18 +1,8 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>Sentify - Upload Reviews</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-</head>
-<body>
+{% extends "base.html" %}
 
-  <nav class="topnav">
-    <a href="{{ url_for('upload') }}">Upload</a>
-    <a href="{{ url_for('dashboard') }}">Dashboard</a>
-    <a href="{{ url_for('logout') }}">Log out</a>
-  </nav>
+{% block title %}Sentify - Upload Reviews{% endblock %}
 
+{% block content %}
   <h1>Customer review sentiment analyzer</h1>
   <p class="subtitle">Upload a CSV of customer reviews and each one gets automatically tagged as positive, negative, neutral, or undefined.</p>
 
@@ -36,20 +26,20 @@
   {% endif %}
 
   {% if results %}
-    <table>
-      <thead>
-        <tr><th>Review</th><th>Sentiment</th></tr>
-      </thead>
-      <tbody>
-        {% for row in results %}
-          <tr>
-            <td>{{ row.text }}</td>
-            <td><span class="tag {{ row.sentiment|lower }}">{{ row.sentiment }}</span></td>
-          </tr>
-        {% endfor %}
-      </tbody>
-    </table>
+    <div class="table-scroll">
+      <table>
+        <thead>
+          <tr><th>Review</th><th>Sentiment</th></tr>
+        </thead>
+        <tbody>
+          {% for row in results %}
+            <tr>
+              <td>{{ row.text }}</td>
+              <td><span class="tag {{ row.sentiment|lower }}">{{ row.sentiment }}</span></td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
   {% endif %}
-
-</body>
-</html>
+{% endblock %}

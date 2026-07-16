@@ -1,12 +1,8 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>Sentify - Login</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-</head>
-<body>
+{% extends "base.html" %}
 
+{% block title %}Sentify - Login{% endblock %}
+
+{% block content %}
   <h1>Sentify</h1>
   <p class="subtitle">Log in to upload and analyze customer reviews.</p>
 
@@ -19,6 +15,4 @@
   {% if error %}
     <p class="error">{{ error }}</p>
   {% endif %}
-
-</body>
-</html>
+{% endblock %}

@@ -3,7 +3,7 @@ import io
 import secrets
 from functools import wraps
 
-from flask import Flask, render_template, request, redirect, url_for, session, Response
+from flask import Flask, render_template, request, redirect, url_for, session, Response, flash
 from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
 from werkzeug.security import check_password_hash, generate_password_hash
 from fpdf import FPDF
@@ -71,6 +71,8 @@ def login():
         if user and password_ok:
             session["user_id"] = user["id"]
             session["email"] = user["email"]
+            db.log_event(user["id"], "login")
+            flash("Login successful.", "success")
             return redirect(url_for("upload"))
         error = "Invalid email or password."
     return render_template("login.html", error=error)
@@ -78,6 +80,9 @@ def login():
 
 @app.route("/logout")
 def logout():
+    user_id = session.get("user_id")
+    if user_id:
+        db.log_event(user_id, "logout")
     session.clear()
     return redirect(url_for("login"))
 
@@ -145,10 +150,27 @@ def escape_formula(value):
     return value
 
 
+def sanitize_for_pdf(text):
+    """Replace characters fpdf2's core fonts can't render, collapsing runs into one '?'."""
+    result = []
+    last_was_replacement = False
+    for ch in text:
+        try:
+            ch.encode("latin-1")
+            result.append(ch)
+            last_was_replacement = False
+        except UnicodeEncodeError:
+            if not last_was_replacement:
+                result.append("?")
+            last_was_replacement = True
+    return "".join(result)
+
+
 @app.route("/export/csv")
 @login_required
 def export_csv():
     reviews = db.get_reviews_for_user(session["user_id"])
+    db.log_event(session["user_id"], "export_csv")
     buffer = io.StringIO()
     writer = csv.writer(buffer)
     writer.writerow(["review", "sentiment"])
@@ -166,6 +188,7 @@ def export_csv():
 @login_required
 def export_pdf():
     reviews = db.get_reviews_for_user(session["user_id"])
+    db.log_event(session["user_id"], "export_pdf")
 
     pdf = FPDF()
     pdf.add_page()
@@ -173,7 +196,8 @@ def export_pdf():
     pdf.cell(0, 10, "Sentify Sentiment Results", new_x=XPos.LMARGIN, new_y=YPos.NEXT)
     pdf.set_font("Helvetica", "", 11)
     for review in reviews:
-        line = f"[{review['sentiment']}] {review['text']}"
+        safe_text = sanitize_for_pdf(review["text"])
+        line = f"[{review['sentiment']}] {safe_text}"
         pdf.multi_cell(0, 8, line, new_x=XPos.LMARGIN, new_y=YPos.NEXT)
 
     pdf_bytes = bytes(pdf.output())

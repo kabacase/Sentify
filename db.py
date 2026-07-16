@@ -1,5 +1,5 @@
 import sqlite3
-from datetime import datetime
+from datetime import datetime, timedelta, timezone
 from werkzeug.security import generate_password_hash
 
 DB_PATH = "sentify.db"
@@ -31,6 +31,15 @@ def init_db():
             user_id INTEGER NOT NULL,
             text TEXT NOT NULL,
             sentiment TEXT NOT NULL,
+            created_at TEXT NOT NULL,
+            FOREIGN KEY (user_id) REFERENCES users (id)
+        )
+    """)
+    conn.execute("""
+        CREATE TABLE IF NOT EXISTS event_log (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            user_id INTEGER NOT NULL,
+            event_type TEXT NOT NULL,
             created_at TEXT NOT NULL,
             FOREIGN KEY (user_id) REFERENCES users (id)
         )
@@ -82,3 +91,15 @@ def get_summary_for_user(user_id):
         if key in summary:
             summary[key] += 1
     return summary
+
+
+def log_event(user_id, event_type):
+    conn = get_db()
+    cutoff = (datetime.now(timezone.utc) - timedelta(days=90)).isoformat()
+    conn.execute("DELETE FROM event_log WHERE created_at < ?", (cutoff,))
+    conn.execute(
+        "INSERT INTO event_log (user_id, event_type, created_at) VALUES (?, ?, ?)",
+        (user_id, event_type, datetime.now(timezone.utc).isoformat()),
+    )
+    conn.commit()
+    conn.close()

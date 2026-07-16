@@ -1,19 +1,9 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>Sentify - Dashboard</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-</head>
-<body>
+{% extends "base.html" %}
 
-  <nav class="topnav">
-    <a href="{{ url_for('upload') }}">Upload</a>
-    <a href="{{ url_for('dashboard') }}">Dashboard</a>
-    <a href="{{ url_for('logout') }}">Log out</a>
-  </nav>
+{% block title %}Sentify - View Dashboard{% endblock %}
 
-  <h1>Sentiment dashboard</h1>
+{% block content %}
+  <h1>View Dashboard</h1>
   <p class="subtitle">Aggregate breakdown across all reviews you've uploaded.</p>
 
   <div class="summary">
@@ -48,9 +38,11 @@
   </div>
 
   <div class="export-links">
-    <a href="{{ url_for('export_csv') }}"><button type="button">Export CSV</button></a>
-    <a href="{{ url_for('export_pdf') }}"><button type="button">Export PDF</button></a>
+    <button type="button" class="export-btn" data-export-url="{{ url_for('export_csv') }}" data-filename="sentify_results.csv" data-expected-type="text/csv">Export CSV</button>
+    <button type="button" class="export-btn" data-export-url="{{ url_for('export_pdf') }}" data-filename="sentify_results.pdf" data-expected-type="application/pdf">Export PDF</button>
   </div>
+{% endblock %}
 
-</body>
-</html>
+{% block scripts %}
+  <script src="{{ url_for('static', filename='app.js') }}"></script>
+{% endblock %}
