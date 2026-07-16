@@ -34,9 +34,3 @@ There's no self-service signup - log in with one of the seeded demo accounts:
 4. Visit the Dashboard to see the aggregate sentiment breakdown for your account.
 5. Export your results as CSV or PDF from the Dashboard.
 
-## Known limitation worth mentioning in the presentation
-VADER is a free, lexicon-based tool (not a trained AI model), so it sometimes misses
-things like sarcasm or domain-specific negativity (e.g. "overpriced" without obviously
-negative words). That's a real, honest limitation to bring up under "challenges" - it's
-also the reason a heavier model (like an OpenAI API call) is on the roadmap for a later
-sprint.
