@@ -57,42 +57,6 @@ def init_db():
     conn.close()
 
 
-def get_user_by_email(email):
-    conn = get_db()
-    user = conn.execute("SELECT * FROM users WHERE email = ?", (email,)).fetchone()
-    conn.close()
-    return user
-
-
-def create_review(user_id, text, sentiment):
-    conn = get_db()
-    conn.execute(
-        "INSERT INTO reviews (user_id, text, sentiment, created_at) VALUES (?, ?, ?, ?)",
-        (user_id, text, sentiment, datetime.now().isoformat()),
-    )
-    conn.commit()
-    conn.close()
-
-
-def get_reviews_for_user(user_id):
-    conn = get_db()
-    reviews = conn.execute(
-        "SELECT * FROM reviews WHERE user_id = ? ORDER BY id DESC", (user_id,)
-    ).fetchall()
-    conn.close()
-    return reviews
-
-
-def get_summary_for_user(user_id):
-    reviews = get_reviews_for_user(user_id)
-    summary = {"total": len(reviews), "positive": 0, "negative": 0, "neutral": 0, "undefined": 0}
-    for review in reviews:
-        key = review["sentiment"].lower()
-        if key in summary:
-            summary[key] += 1
-    return summary
-
-
 def log_event(user_id, event_type):
     conn = get_db()
     cutoff = (datetime.now(timezone.utc) - timedelta(days=90)).isoformat()

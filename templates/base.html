@@ -10,9 +10,9 @@
   <div class="page-wrap">
     {% if session.get('user_id') %}
       <nav class="topnav">
-        <a href="{{ url_for('upload') }}">Upload</a>
-        <a href="{{ url_for('dashboard') }}">View Dashboard</a>
-        <a href="{{ url_for('logout') }}">Log out</a>
+        <a href="{{ url_for('upload.upload') }}">Upload</a>
+        <a href="{{ url_for('dashboard.dashboard') }}">View Dashboard</a>
+        <a href="{{ url_for('auth.logout') }}">Log out</a>
       </nav>
     {% endif %}
 

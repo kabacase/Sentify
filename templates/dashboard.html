@@ -38,8 +38,8 @@
   </div>
 
   <div class="export-links">
-    <button type="button" class="export-btn" data-export-url="{{ url_for('export_csv') }}" data-filename="sentify_results.csv" data-expected-type="text/csv">Export CSV</button>
-    <button type="button" class="export-btn" data-export-url="{{ url_for('export_pdf') }}" data-filename="sentify_results.pdf" data-expected-type="application/pdf">Export PDF</button>
+    <button type="button" class="export-btn" data-export-url="{{ url_for('export.export_csv') }}" data-filename="sentify_results.csv" data-expected-type="text/csv">Export CSV</button>
+    <button type="button" class="export-btn" data-export-url="{{ url_for('export.export_pdf') }}" data-filename="sentify_results.pdf" data-expected-type="application/pdf">Export PDF</button>
   </div>
 {% endblock %}
 
